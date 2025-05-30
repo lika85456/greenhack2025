@@ -113,21 +113,21 @@ export const defaultLayers: LayerConfig[] = [
       },
     },
     {
-      id: "zu100",
-      name: "ZU100",
+      id: "floodplains_100_year", // Changed from "zu100"
+      name: "100-year Floodplains", // Changed from "ZU100"
       url: "https://tiles.arcgis.com/tiles/ZszVN9lBVA5x4VmX/arcgis/rest/services/ZU100/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       type: "pbf",
       visible: true,
       style: {
-        color: "#ff0000", // Example style
+        color: "#007bff", // Adjusted to a blue color, more fitting for water
         weight: 1,
         opacity: 0.7,
-        fillColor: "#ff0000",
-        fillOpacity: 0.3,
+        fillColor: "#007bff", // Adjusted to a blue color
+        fillOpacity: 0.4, // Slightly increased opacity for better visibility
       },
       vectorTileOptions: {
-        layerName: "ZU100", // Specify the layer name within the PBF tiles
-        maxZoom: 18, // Optional: Adjust as needed
+        layerName: "ZU100", // This should match the layer name in the PBF, likely still ZU100
+        maxZoom: 18, 
       }
     }
 ];
