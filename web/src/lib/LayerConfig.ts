@@ -5,7 +5,7 @@ export interface LayerConfig {
   id: string;
   name: string;
   url: string;
-  type: 'geojson' | 'wms' | 'xyz';
+  type: 'geojson' | 'wms' | 'xyz' | 'pbf'; // Added 'pbf' type
   visible: boolean;
   style?: {
     color?: string;
@@ -15,6 +15,13 @@ export interface LayerConfig {
     fillOpacity?: number;
   };
   middleware?: (data: any) => any; // Optional middleware function for processing data
+  vectorTileOptions?: { // Optional options for vector tiles
+    maxZoom?: number;
+    minZoom?: number;
+    tolerance?: number;
+    extent?: number;
+    layerName?: string; // Added layerName for PBF layers
+  };
 }
 
 export const defaultLayers: LayerConfig[] = [
@@ -104,5 +111,23 @@ export const defaultLayers: LayerConfig[] = [
         fillColor: "brown",
         fillOpacity: 0.2,
       },
+    },
+    {
+      id: "zu100",
+      name: "ZU100",
+      url: "https://tiles.arcgis.com/tiles/ZszVN9lBVA5x4VmX/arcgis/rest/services/ZU100/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      type: "pbf",
+      visible: true,
+      style: {
+        color: "#ff0000", // Example style
+        weight: 1,
+        opacity: 0.7,
+        fillColor: "#ff0000",
+        fillOpacity: 0.3,
+      },
+      vectorTileOptions: {
+        layerName: "ZU100", // Specify the layer name within the PBF tiles
+        maxZoom: 18, // Optional: Adjust as needed
+      }
     }
-]; 
+];

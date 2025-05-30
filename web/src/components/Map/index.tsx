@@ -12,6 +12,7 @@ import { FeatureCollection, useGeoJSONCached } from '../../hooks/useGeoJSONCache
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
 import { LayerControl } from './LayerControl'
 import { LeafletGeoJSONData } from './LeafletGeoJSONData'
+import { LeafletPBFData } from './LeafletPBFData'; // Import LeafletPBFData
 import { EnvironmentInfo } from './EnvironmentInfo'
 import useMapContext from './useMapContext'
 
@@ -143,6 +144,14 @@ const LeafletMapInner = () => {
                 url={layer.url}
                 pathOptions={layer.style}
                 processData={layer.middleware}
+              />
+            ))}
+          {!isLoading && layers
+            .filter(layer => layer.visible && layer.type === 'pbf')
+            .map(layer => (
+              <LeafletPBFData
+                key={layer.id}
+                layer={layer}
               />
             ))}
           {clickedPosition && customMarkerIcon && (
