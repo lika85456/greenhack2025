@@ -7,9 +7,11 @@ import { useResizeDetector } from 'react-resize-detector'
 
 import MapTopBar from '#components/TopBar'
 import { AppConfig } from '#lib/AppConfig'
+import { LayerConfig, defaultLayers } from '#lib/LayerConfig'
 
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
-import { LeafletRivers } from './GeoData'
+import { LayerControl } from './LayerControl'
+import { LeafletGeoJSONData } from './LeafletGeoJSONData'
 import useMapContext from './useMapContext'
 
 const LeafletMapContainer = dynamic(async () => (await import('./LeafletMapContainer')).LeafletMapContainer, {
@@ -41,6 +43,7 @@ const getViewState: (map?: Leaflet.Map) => ViewState | undefined = (map?: Leafle
 
 const LeafletMapInner = () => {
   const { map } = useMapContext()
+  const [layers, setLayers] = useState<LayerConfig[]>(defaultLayers)
 
   // we can use this to modify our query for locations
   const [viewState, setViewState] = useState(getViewState(map))
@@ -68,6 +71,14 @@ const LeafletMapInner = () => {
     }
   }, [map])
 
+  const handleLayerToggle = (layerId: string, visible: boolean) => {
+    setLayers(prevLayers =>
+      prevLayers.map(layer =>
+        layer.id === layerId ? { ...layer, visible } : layer
+      )
+    )
+  }
+
   const isLoading = !map || !viewportWidth || !viewportHeight
 
   // Default map center and zoom level
@@ -76,22 +87,27 @@ const LeafletMapInner = () => {
 
   return (
     <div className="absolute h-full w-full overflow-hidden" ref={viewportRef}>
-
-        <LeafletMapContainer
-          center={defaultCenter}
-          zoom={defaultZoom}
-          maxZoom={AppConfig.maxZoom}
-          minZoom={AppConfig.minZoom}
-        >
-          {/* Plain simple map with no markers */}
-          {!isLoading ? (
-            <LeafletRivers url="/reky.geojson" />
-          ) : (
-            // we have to spawn at least one element to keep it happy
-            // eslint-disable-next-line react/jsx-no-useless-fragment
-            <></>
-          )}
-        </LeafletMapContainer>
+      <LayerControl layers={layers} onLayerToggle={handleLayerToggle} />
+      <LeafletMapContainer
+        center={defaultCenter}
+        zoom={defaultZoom}
+        maxZoom={AppConfig.maxZoom}
+        minZoom={AppConfig.minZoom}
+      >
+        {!isLoading && (
+          <>
+            {layers
+              .filter(layer => layer.visible && layer.type === 'geojson')
+              .map(layer => (
+                <LeafletGeoJSONData
+                  key={layer.id}
+                  url={layer.url}
+                  pathOptions={layer.style}
+                />
+              ))}
+          </>
+        )}
+      </LeafletMapContainer>
     </div>
   )
 }
