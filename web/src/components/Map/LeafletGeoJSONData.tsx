@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import type { GeoJSONProps } from 'react-leaflet';
 
 import { useGeoJSON, FeatureCollection } from '../../hooks/useGeoJSON';
-import { processRiverData } from '../../lib/riversMiddleware';
 
 interface LeafletGeoJSONDataProps {
   url: string;
@@ -13,7 +12,7 @@ interface LeafletGeoJSONDataProps {
   processData?: (data: FeatureCollection) => FeatureCollection;
 }
 
-export const LeafletGeoJSONData: React.FC<LeafletGeoJSONDataProps> = ({ 
+export const LeafletGeoJSONData: React.FC<LeafletGeoJSONDataProps> = ({
   url, 
   pathOptions,
   processData = (data) => data // Default processor just returns the data
@@ -49,9 +48,4 @@ export const LeafletGeoJSONData: React.FC<LeafletGeoJSONDataProps> = ({
   });
 
   return <GeoJSON data={processedData} pathOptions={defaultPathOptions} />;
-};
-
-// Convenience component specifically for rivers
-export const LeafletRivers: React.FC<Omit<LeafletGeoJSONDataProps, 'processData'>> = (props) => {
-  return <LeafletGeoJSONData {...props} processData={processRiverData} />;
 };

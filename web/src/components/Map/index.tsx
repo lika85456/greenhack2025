@@ -9,13 +9,12 @@ import MapTopBar from '#components/TopBar'
 import { AppConfig } from '#lib/AppConfig'
 
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
-import { LeafletRivers } from './LeafletGeoJSONData'
+import { LeafletRivers } from './GeoData'
 import useMapContext from './useMapContext'
 
 const LeafletMapContainer = dynamic(async () => (await import('./LeafletMapContainer')).LeafletMapContainer, {
   ssr: false,
 });
-
 
 export interface ViewState {
   minLat: number
@@ -77,15 +76,7 @@ const LeafletMapInner = () => {
 
   return (
     <div className="absolute h-full w-full overflow-hidden" ref={viewportRef}>
-      <MapTopBar />
-      <div
-        className={`absolute left-0 w-full transition-opacity ${isLoading ? 'opacity-0' : 'opacity-1 '}`}
-        style={{
-          top: AppConfig.ui.topBarHeight,
-          width: viewportWidth ?? '100%',
-          height: viewportHeight ? viewportHeight - AppConfig.ui.topBarHeight : '100%',
-        }}
-      >
+
         <LeafletMapContainer
           center={defaultCenter}
           zoom={defaultZoom}
@@ -101,7 +92,6 @@ const LeafletMapInner = () => {
             <></>
           )}
         </LeafletMapContainer>
-      </div>
     </div>
   )
 }
