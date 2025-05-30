@@ -1,3 +1,4 @@
+import { electricalMiddleware } from "#components/Map/GeoData/electricalMiddleware";
 import { riversMiddleware } from "#components/Map/GeoData/riversMiddleware";
 
 export interface LayerConfig {
@@ -60,5 +61,34 @@ export const defaultLayers: LayerConfig[] = [
       fillColor: "yellow",
       fillOpacity: 0.2,
     }
-  }
+  },
+/**  {
+    id:"electrical",
+    name: "Electrical Infrastructure",
+    url: "/electrical.geojson",
+    type: "geojson",
+    visible: true,
+    style: {
+      color: "orange",
+      weight: 2,
+      opacity: 1,
+      fillColor: "orange",
+      fillOpacity: 0.2,
+    }
+  } */
+    {
+      id:"electrical_major",
+      name: "Major Electrical Infrastructure",
+      url: "/electrical_major.geojson",
+      type: "geojson",
+      visible: true,
+      style: {
+        color: "orange",
+        weight: 2,
+        opacity: 1,
+        fillColor: "orange",
+        fillOpacity: 0.2,
+      },
+      middleware: electricalMiddleware // No middleware for this layer
+    }
 ]; 

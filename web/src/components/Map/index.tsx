@@ -7,7 +7,7 @@ import { useResizeDetector } from 'react-resize-detector'
 
 import { AppConfig } from '#lib/AppConfig'
 import { LayerConfig, defaultLayers } from '#lib/LayerConfig'
-import { FeatureCollection, useGeoJSON } from '../../hooks/useGeoJSON'; // Corrected import path
+import { FeatureCollection, useGeoJSONCached } from '../../hooks/useGeoJSONCached'; // Use cached version
 
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
 import { LayerControl } from './LayerControl'
@@ -47,10 +47,10 @@ const LeafletMapInner = () => {
   const [layers, setLayers] = useState<LayerConfig[]>(defaultLayers)
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null);
 
-  // Fetch GeoJSON data for layers needed by EnvironmentInfo
-  const { geoJSONData: riversData } = useGeoJSON('/reky.geojson');
-  const { geoJSONData: parksData } = useGeoJSON('/chko.geojson');
-  const { geoJSONData: fieldsData } = useGeoJSON('/fields.geojson'); // Assuming you have this file
+  // Fetch GeoJSON data for layers needed by EnvironmentInfo using cached hook
+  const { processedData: riversData } = useGeoJSONCached('/reky.geojson');
+  const { processedData: parksData } = useGeoJSONCached('/chko.geojson');
+  const { processedData: fieldsData } = useGeoJSONCached('/fields.geojson');
 
   // we can use this to modify our query for locations
   const [viewState, setViewState] = useState(getViewState(map))
