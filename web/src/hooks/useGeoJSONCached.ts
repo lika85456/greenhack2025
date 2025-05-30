@@ -65,19 +65,46 @@ export const useGeoJSONCached = (
 
         setGeoJSONData(rawData);
 
-        // Remove all markers (Point features) from the data
-        const dataWithoutMarkers: FeatureCollection = {
-          ...rawData,
-          features: rawData.features.filter(feature => 
-            feature.geometry?.type !== 'Point'
+        // Process data first if processor is provided
+        let processed = rawData;
+        if (processData) {
+          processed = processData(rawData);
+        }
+
+        // convert all markers to small polygons
+        processed.features = processed.features.map(feature => {
+          if (feature.geometry?.type === 'Point') {
+            // Convert Point to a small Polygon (e.g., 10m x 10m square)
+            const coords = feature.geometry.coordinates;
+            return {
+              ...feature,
+              geometry: {
+                type: 'Polygon',
+                coordinates: [[
+                  [coords[0] - 0.0001, coords[1] - 0.0001],
+                  [coords[0] + 0.0001, coords[1] - 0.0001],
+                  [coords[0] + 0.0001, coords[1] + 0.0001],
+                  [coords[0] - 0.0001, coords[1] + 0.0001],
+                  [coords[0] - 0.0001, coords[1] - 0.0001]
+                ]]
+              }
+            };
+          }
+          return feature;
+        }
+        );
+
+        // Then remove all markers (Point features) from the processed data
+        const processedWithoutMarkers: FeatureCollection = {
+          ...processed,
+          features: processed.features.filter(feature => 
+            // feature.geometry?.type !== 'Point'
+            true
           )
         };
 
-        // Process data if processor is provided
-        let processed = dataWithoutMarkers;
-        if (processData) {
-          processed = processData(dataWithoutMarkers);
-        }
+        // Use the processed data without markers as final result
+        processed = processedWithoutMarkers;
 
         // Cache processed data
         processedCache.set(processCacheKey, processed);

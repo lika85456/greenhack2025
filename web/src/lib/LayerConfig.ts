@@ -104,5 +104,19 @@ export const defaultLayers: LayerConfig[] = [
         fillColor: "brown",
         fillOpacity: 0.2,
       },
+    },
+    {
+      id:"mines_undermined",
+      name: "Mines and Undermined Areas",
+      url: "/mines_undermined.geojson",
+      type: "geojson",
+      visible: true,
+      style: {
+        color: "red",
+        weight: 2,
+        opacity: 1,
+        fillColor: "red",
+        fillOpacity: 0.2,
+      },
     }
 ]; 

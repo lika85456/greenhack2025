@@ -169,6 +169,7 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
 }) => {
   const [riversStrength, setRiversStrength] = useState(50);
   const [parksStrength, setParksStrength] = useState(50);
+  const [environmentIndex, setEnvironmentIndex] = useState(0);
 
   const [distanceToRiver, setDistanceToRiver] = useState<number | string>('N/A');
   const [distanceToPark, setDistanceToPark] = useState<number | string>('N/A');
@@ -186,13 +187,19 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
     }
   }, [clickedPosition, riversData, parksData, fieldsData, layers]);
 
-  const environmentIndex = calculateEnvironmentIndex(
-    clickedPosition,
-    riversStrength,
-    parksStrength,
-    distanceToRiver,
-    distanceToPark
-  );
+  // Recalculate environment index when position, distances, or slider values change
+  useEffect(() => {
+    const newIndex = calculateEnvironmentIndex(
+      clickedPosition,
+      riversStrength,
+      parksStrength,
+      distanceToRiver,
+      distanceToPark
+    );
+    setEnvironmentIndex(newIndex);
+  }, [clickedPosition, riversStrength, parksStrength, distanceToRiver, distanceToPark]);
+
+
 
   if (!clickedPosition) {
     return (
@@ -246,7 +253,10 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
           />
         </div>
         <div className="pt-2 font-semibold">
-          <strong>Environment Index:</strong> {environmentIndex.toFixed(2)} / 100
+          <strong>Environment Index:</strong> {environmentIndex.toFixed(1)} / 100
+          <div className="text-xs text-gray-600 mt-1">
+            (0 = worst, 100 = best)
+          </div>
         </div>
       </div>
     </div>
