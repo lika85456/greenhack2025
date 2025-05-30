@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { LatLng } from 'leaflet';
-import { FeatureCollection } from '../../hooks/useGeoJSON';
+import { FeatureCollection } from '../../hooks/useGeoJSON'; 
 import * as turf from '@turf/turf';
-import { Feature, Geometry } from 'geojson'; // Import standard GeoJSON types
-import { LayerConfig } from '../../lib/LayerConfig'; // Added import for LayerConfig
+// Import specific geometry types from turf.helpers if needed, or use geojson types
+import { Feature, Geometry, GeometryCollection as GeoJsonGeometryCollection } from 'geojson'; 
+import { LayerConfig } from '../../lib/LayerConfig';
 
 interface EnvironmentInfoProps {
   clickedPosition: LatLng | null;
@@ -44,39 +45,119 @@ const calculateDistanceToNearestFeature = (
     return 'N/A';
   }
   const from = turf.point([point.lng, point.lat]);
-  let minDistance = Infinity;
+  let minOverallDistance = Infinity;
 
   featuresCollection.features.forEach((feature: Feature<Geometry>) => {
-    if (feature && feature.geometry) {
-      try {
-        let distance;
-        // turf.distance should handle various feature types as the second argument
-        // as long as the first is a Point.
-        // The issue might be with specific feature geometries or types within your GeoJSON.
-        // Let's ensure the feature itself is valid before passing to turf.distance
-        if (feature.geometry && feature.geometry.coordinates && feature.geometry.coordinates.length > 0) {
-            distance = turf.distance(from, feature, { units: 'kilometers' });
-            if (distance < minDistance) {
-              minDistance = distance;
-            }
-        } else if (feature.geometry && feature.geometry.type === 'GeometryCollection' && feature.geometry.geometries) {
-            // Handle GeometryCollection by iterating its geometries
-            (feature.geometry as turf.GeometryCollection).geometries.forEach(geom => {
-                // Create a temporary feature for each geometry to calculate distance
-                const tempFeature = turf.feature(geom);
-                const distToGeom = turf.distance(from, tempFeature, { units: 'kilometers' });
-                if (distToGeom < minDistance) {
-                    minDistance = distToGeom;
-                }
+    if (!feature || !feature.geometry) {
+      return;
+    }
+
+    try {
+      let currentMinDistanceForFeature = Infinity;
+      const geom = feature.geometry;
+
+      function getDistanceToGeometry(currentGeom: Geometry): number {
+        let distance = Infinity;
+        switch (currentGeom.type) {
+          case 'Point':
+            distance = turf.distance(from, currentGeom, { units: 'kilometers' });
+            break;
+          case 'MultiPoint':
+            currentGeom.coordinates.forEach(coord => {
+              const pt = turf.point(coord);
+              const d = turf.distance(from, pt, { units: 'kilometers' });
+              if (d < distance) distance = d;
             });
+            break;
+          case 'LineString':
+            const nearestPointOnLine = turf.nearestPointOnLine(currentGeom, from, { units: 'kilometers' });
+            distance = nearestPointOnLine.properties.dist ?? Infinity;
+            break;
+          case 'MultiLineString':
+            currentGeom.coordinates.forEach(lineCoords => {
+              const line = turf.lineString(lineCoords);
+              const nearestPt = turf.nearestPointOnLine(line, from, { units: 'kilometers' });
+              if (nearestPt.properties.dist !== undefined && nearestPt.properties.dist < distance) {
+                distance = nearestPt.properties.dist;
+              }
+            });
+            break;
+          case 'Polygon':
+            if (turf.booleanPointInPolygon(from, turf.feature(currentGeom))) {
+              distance = 0;
+            } else {
+              const polygonBoundaries = turf.polygonToLine(currentGeom);
+              if (polygonBoundaries) {
+                if (polygonBoundaries.type === 'FeatureCollection') {
+                  let minDistToBoundary = Infinity;
+                  polygonBoundaries.features.forEach(lineFeature => {
+                    const nearestPointOnLine = turf.nearestPointOnLine(lineFeature, from, { units: 'kilometers' });
+                    if (nearestPointOnLine.properties.dist !== undefined && nearestPointOnLine.properties.dist < minDistToBoundary) {
+                      minDistToBoundary = nearestPointOnLine.properties.dist;
+                    }
+                  });
+                  distance = minDistToBoundary;
+                } else { // It's a Feature<LineString | MultiLineString>
+                  const nearestPointOnBoundary = turf.nearestPointOnLine(polygonBoundaries, from, { units: 'kilometers' });
+                  distance = nearestPointOnBoundary.properties.dist ?? Infinity;
+                }
+              }
+            }
+            break;
+          case 'MultiPolygon':
+            currentGeom.coordinates.forEach(polyCoords => {
+              const poly = turf.polygon(polyCoords);
+              let distToSinglePoly = Infinity;
+              if (turf.booleanPointInPolygon(from, poly)) {
+                distToSinglePoly = 0;
+              } else {
+                const polyBoundaries = turf.polygonToLine(poly);
+                if (polyBoundaries) {
+                  if (polyBoundaries.type === 'FeatureCollection') {
+                    let minDistToBoundary = Infinity;
+                    polyBoundaries.features.forEach(lineFeature => {
+                      const nearestPointOnLine = turf.nearestPointOnLine(lineFeature, from, { units: 'kilometers' });
+                      if (nearestPointOnLine.properties.dist !== undefined && nearestPointOnLine.properties.dist < minDistToBoundary) {
+                        minDistToBoundary = nearestPointOnLine.properties.dist;
+                      }
+                    });
+                    distToSinglePoly = minDistToBoundary;
+                  } else { // It's a Feature<LineString | MultiLineString>
+                    const nearestPointOnBoundary = turf.nearestPointOnLine(polyBoundaries, from, { units: 'kilometers' });
+                    distToSinglePoly = nearestPointOnBoundary.properties.dist ?? Infinity;
+                  }
+                }
+              }
+              if (distToSinglePoly < distance) distance = distToSinglePoly;
+            });
+            break;
+          case 'GeometryCollection':
+            const geomCollection = currentGeom as GeoJsonGeometryCollection;
+            geomCollection.geometries.forEach(subGeom => {
+              const d = getDistanceToGeometry(subGeom);
+              if (d < distance) distance = d;
+            });
+            break;
+          default:
+            // console.warn(`Unsupported geometry type: ${(currentGeom as any).type}`);
+            break;
         }
-      } catch (e) {
-        console.error("Error calculating distance to feature:", feature, e);
+        return distance;
       }
+
+      currentMinDistanceForFeature = getDistanceToGeometry(geom);
+
+      if (typeof currentMinDistanceForFeature === 'number' && !isNaN(currentMinDistanceForFeature)) {
+        if (currentMinDistanceForFeature < minOverallDistance) {
+          minOverallDistance = currentMinDistanceForFeature;
+        }
+      }
+    } catch (e: any) {
+      console.error(`Error calculating distance for feature (type: ${feature.geometry.type}): ${e.message}`, e);
     }
   });
 
-  return minDistance === Infinity ? 'N/A' : minDistance;
+  return minOverallDistance === Infinity ? 'N/A' : minOverallDistance;
 };
 
 export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
@@ -84,14 +165,14 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
   riversData,
   parksData,
   fieldsData,
-  layers, // Destructure new prop
+  layers,
 }) => {
   const [riversStrength, setRiversStrength] = useState(50);
   const [parksStrength, setParksStrength] = useState(50);
 
   const [distanceToRiver, setDistanceToRiver] = useState<number | string>('N/A');
   const [distanceToPark, setDistanceToPark] = useState<number | string>('N/A');
-  const [distanceToFields, setDistanceToFields] = useState<number | string>('N/A'); // Added state for fields distance
+  const [distanceToFields, setDistanceToFields] = useState<number | string>('N/A');
 
   useEffect(() => {
     setDistanceToRiver(calculateDistanceToNearestFeature(clickedPosition, riversData));
@@ -103,7 +184,7 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
     } else {
       setDistanceToFields('N/A');
     }
-  }, [clickedPosition, riversData, parksData, fieldsData, layers]); // Added fieldsData and layers to dependency array
+  }, [clickedPosition, riversData, parksData, fieldsData, layers]);
 
   const environmentIndex = calculateEnvironmentIndex(
     clickedPosition,
