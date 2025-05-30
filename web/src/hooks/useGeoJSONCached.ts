@@ -65,10 +65,18 @@ export const useGeoJSONCached = (
 
         setGeoJSONData(rawData);
 
+        // Remove all markers (Point features) from the data
+        const dataWithoutMarkers: FeatureCollection = {
+          ...rawData,
+          features: rawData.features.filter(feature => 
+            feature.geometry?.type !== 'Point'
+          )
+        };
+
         // Process data if processor is provided
-        let processed = rawData;
+        let processed = dataWithoutMarkers;
         if (processData) {
-          processed = processData(rawData);
+          processed = processData(dataWithoutMarkers);
         }
 
         // Cache processed data

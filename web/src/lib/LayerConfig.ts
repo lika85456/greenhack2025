@@ -53,7 +53,7 @@ export const defaultLayers: LayerConfig[] = [
     name: "Fields",
     url: "/fields.geojson",
     type: "geojson",
-    visible: true,
+    visible: false,
     style: {
       color: "yellow",
       weight: 2,
@@ -62,12 +62,12 @@ export const defaultLayers: LayerConfig[] = [
       fillOpacity: 0.2,
     }
   },
-/**  {
+  {
     id:"electrical",
     name: "Electrical Infrastructure",
     url: "/electrical.geojson",
     type: "geojson",
-    visible: true,
+    visible: false,
     style: {
       color: "orange",
       weight: 2,
@@ -75,7 +75,7 @@ export const defaultLayers: LayerConfig[] = [
       fillColor: "orange",
       fillOpacity: 0.2,
     }
-  } */
+  },
     {
       id:"electrical_major",
       name: "Major Electrical Infrastructure",
@@ -90,5 +90,19 @@ export const defaultLayers: LayerConfig[] = [
         fillOpacity: 0.2,
       },
       middleware: electricalMiddleware // No middleware for this layer
+    },
+    {
+      id:"forests",
+      name: "Forests",
+      url: "/forests.geojson",
+      type: "geojson",
+      visible: true,
+      style: {
+        color: "brown",
+        weight: 2,
+        opacity: 1,
+        fillColor: "brown",
+        fillOpacity: 0.2,
+      },
     }
 ]; 
