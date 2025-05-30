@@ -5,7 +5,7 @@ export interface LayerConfig {
   id: string;
   name: string;
   url: string;
-  type: 'geojson' | 'wms' | 'xyz';
+  type: 'geojson' | 'wms' | 'xyz' | 'pbf'; // Added 'pbf' type
   visible: boolean;
   style?: {
     color?: string;
@@ -15,6 +15,13 @@ export interface LayerConfig {
     fillOpacity?: number;
   };
   middleware?: (data: any) => any; // Optional middleware function for processing data
+  vectorTileOptions?: { // Optional options for vector tiles
+    maxZoom?: number;
+    minZoom?: number;
+    tolerance?: number;
+    extent?: number;
+    layerName?: string; // Added layerName for PBF layers
+  };
 }
 
 export const defaultLayers: LayerConfig[] = [
@@ -118,5 +125,23 @@ export const defaultLayers: LayerConfig[] = [
         fillColor: "red",
         fillOpacity: 0.2,
       },
+    },
+    {
+      id: "floodplains_100_year", // Changed from "zu100"
+      name: "100-year Floodplains", // Changed from "ZU100"
+      url: "https://tiles.arcgis.com/tiles/ZszVN9lBVA5x4VmX/arcgis/rest/services/ZU100/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      type: "pbf",
+      visible: true,
+      style: {
+        color: "#007bff", // Adjusted to a blue color, more fitting for water
+        weight: 1,
+        opacity: 0.7,
+        fillColor: "#007bff", // Adjusted to a blue color
+        fillOpacity: 0.4, // Slightly increased opacity for better visibility
+      },
+      vectorTileOptions: {
+        layerName: "ZU100", // This should match the layer name in the PBF, likely still ZU100
+        maxZoom: 18, 
+      }
     }
-]; 
+];
