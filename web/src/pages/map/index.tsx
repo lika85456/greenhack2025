@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 import Head from 'next/head'
 
 import Map from '#components/Map'
