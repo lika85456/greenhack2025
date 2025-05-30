@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@react-leaflet/core": "^2.1.0",
+    "@turf/turf": "^7.2.0",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3",
     "lucide-react": "^0.121.0",

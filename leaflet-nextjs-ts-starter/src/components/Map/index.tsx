@@ -9,7 +9,7 @@ import MapTopBar from '#components/TopBar'
 import { AppConfig } from '#lib/AppConfig'
 
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
-import { LeafletGeoJSON } from './LeafletGeoJSON'
+import { LeafletRivers } from './LeafletGeoJSONData'
 import useMapContext from './useMapContext'
 
 const LeafletMapContainer = dynamic(async () => (await import('./LeafletMapContainer')).LeafletMapContainer, {
@@ -94,7 +94,7 @@ const LeafletMapInner = () => {
         >
           {/* Plain simple map with no markers */}
           {!isLoading ? (
-            <LeafletGeoJSON url="/reky.geojson" />
+            <LeafletRivers url="/reky.geojson" />
           ) : (
             // we have to spawn at least one element to keep it happy
             // eslint-disable-next-line react/jsx-no-useless-fragment
