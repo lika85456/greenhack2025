@@ -1,4 +1,4 @@
-import { Leaf } from 'lucide-react'
+import { Leaf, Map, Users, Github, ArrowRight } from 'lucide-react'
 import Head from 'next/head'
 import Link from 'next/link'
 
@@ -6,81 +6,68 @@ import NavMenu from '#components/common/NavMenu'
 import { AppConfig } from '#lib/AppConfig'
 
 const Home = () => (
-  <div className="container mx-auto max-w-2xl p-3 max-md:max-w-none">
+  <div className="container mx-auto max-w-4xl p-3 max-md:max-w-none">
     <Head>
-      <title>Jumpstart your new leaflet mapping Project with next.js and typescript 🤩</title>
+      <title>ProstěTeam - Smart Powerline Grid Planning</title>
       <meta
         property="og:title"
-        content="Jumpstart your new leaflet mapping Project with next.js and typescript 🤩"
+        content="ProstěTeam - Smart Powerline Grid Planning"
         key="title"
       />
       <meta
         name="description"
-        content="next-leaflet-starter-typescript is an extensible next.js starter template for the leaflet-maps-react plugin. Written in typescript,
-      visually enhanced by tailwind and lucide-react icons."
+        content="An innovative solution for powerline grid planning that helps visualize and analyze environmental constraints, national parks, and water bodies to make informed decisions."
       />
     </Head>
     <header className="items-top mt-10 gap-4 md:flex">
       <span className="text-primary">
-        <Leaf size={AppConfig.ui.bigIconSize} className="mt-2" />
+        <Map size={AppConfig.ui.bigIconSize} className="mt-2" />
       </span>
       <div>
-        <h2 className="text-4xl font-bold ">Next.js starter for leaflet-react</h2>
-        <h3 className="mb-16 text-3xl">written in Typescript</h3>
+        <h2 className="text-4xl font-bold">Smart Powerline Grid Planning</h2>
+        <h3 className="mb-4 text-2xl text-gray-600">Making infrastructure planning smarter and more sustainable</h3>
       </div>
     </header>
-    <section>
-      <p className="mb-2">
-        <span>An extensible </span>
-        <Link className="text-primary" target="_blank" href="https://nextjs.org/">
-          next.js
-        </Link>
-        <span> starter for the </span>
-        <Link className="text-primary" target="_blank" href="https://react-leaflet.js.org/">
-          leaflet-react
-        </Link>
-        <span> plugin. Written in </span>
-        <Link className="text-primary" target="_blank" href="https://www.typescriptlang.org/">
-          typescript
-        </Link>
-        <span>, visually enhanced by </span>
-        <Link className="text-primary" target="_blank" href="https://tailwindcss.com/">
-          tailwind
-        </Link>
-        <span> and </span>
-        <Link className="text-primary" target="_blank" href="https://lucide.dev/">
-          lucide icons
-        </Link>
-        <span>. ✨</span>
-      </p>
-      <p className="my-3">
-        <span> 🤝 Feel free to contribute on </span>
-        <Link
-          href="https://github.com/richard-unterberg/typescript-next-leaflet-starter"
-          className="text-primary"
-        >
-          Github
-        </Link>
-      </p>
+    <section className="my-8">
+      <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
+        <h3 className="mb-4 text-2xl font-semibold">About Our Project</h3>
+        <p className="mb-4 text-lg leading-relaxed">
+          We are developing an innovative application that revolutionizes powerline grid planning by providing comprehensive 
+          environmental and geographical insights. Our solution helps planners make informed decisions by integrating multiple data layers, we enable more sustainable and environmentally conscious infrastructure planning.
+        </p>
+      </div>
     </section>
+
+    <section className="my-12 text-center">
+      <Link
+        href="/map"
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-lg font-semibold text-white shadow-md transition-all hover:bg-primary/90 hover:shadow-lg"
+      >
+        <Map size={24} />
+        Launch Planner Application
+        <ArrowRight size={20} />
+      </Link>
+    </section>
+
     <section className="grid grid-cols-1 md:grid-cols-2">
       <div>
-        <h3 className="my-5 text-xl">Demo Content</h3>
+        <h3 className="my-5 text-xl">Explore Our Features</h3>
         <NavMenu />
       </div>
     </section>
+
     <footer className="mt-16 flex justify-between rounded bg-light p-3 text-sm">
       <div>
-        2023, some rights reserved <br />
+        © 2025 ProstěTeam <br />
         <Link
-          href="https://github.com/richard-unterberg/typescript-next-leaflet-starter"
+          href="https://github.com/lika85456/greenhack2025"
           className="text-primary"
         >
-          typescript-next-leaflet-starter
+          greenhack2025
         </Link>
       </div>
       <div className="text-primary">
-        <Leaf size={AppConfig.ui.mapIconSize} className="mt-2" />
+        <Map size={AppConfig.ui.mapIconSize} className="mt-2" />
       </div>
     </footer>
   </div>
