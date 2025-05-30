@@ -7,7 +7,7 @@ import type { LatLng } from 'leaflet'
 
 import { AppConfig } from '#lib/AppConfig'
 import { LayerConfig, defaultLayers } from '#lib/LayerConfig'
-import { FeatureCollection, useGeoJSON } from '../../hooks/useGeoJSON'
+import { FeatureCollection, useGeoJSONCached } from '../../hooks/useGeoJSONCached'; // Use cached version
 
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
 import { LayerControl } from './LayerControl'
@@ -58,10 +58,10 @@ const LeafletMapInner = () => {
   const [customMarkerIcon, setCustomMarkerIcon] = useState<any>(null)
   const [viewState, setViewState] = useState(getViewState(map))
 
-  // Fetch GeoJSON data for layers needed by EnvironmentInfo
-  const { geoJSONData: riversData } = useGeoJSON('/reky.geojson')
-  const { geoJSONData: parksData } = useGeoJSON('/chko.geojson')
-  const { geoJSONData: fieldsData } = useGeoJSON('/fields.geojson')
+  // Fetch GeoJSON data for layers needed by EnvironmentInfo using cached hook
+  const { processedData: riversData } = useGeoJSONCached('/reky.geojson');
+  const { processedData: parksData } = useGeoJSONCached('/chko.geojson');
+  const { processedData: fieldsData } = useGeoJSONCached('/fields.geojson');
 
   const {
     width: viewportWidth,

@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+
 import type { GeoJSONProps } from 'react-leaflet';
 
-import { useGeoJSON, FeatureCollection } from '../../hooks/useGeoJSON';
+import { useGeoJSONCached, FeatureCollection } from '../../hooks/useGeoJSONCached';
 
 interface LeafletGeoJSONDataProps {
   url: string;
@@ -19,16 +19,8 @@ export const LeafletGeoJSONData: React.FC<LeafletGeoJSONDataProps> = ({
   processData = (data) => data, // Default processor just returns the data
   color,
 }) => {
-  const { geoJSONData, isLoading, error } = useGeoJSON(url);
-  const [processedData, setProcessedData] = useState<FeatureCollection | null>(null);
-
-  useEffect(() => {
-    if (geoJSONData) {
-      // Apply the data processor (could be the riversMiddleware or any other processor)
-      const processed = processData(geoJSONData);
-      setProcessedData(processed);
-    }
-  }, [geoJSONData, processData]);
+  // Use cached hook that handles both fetching and processing with caching
+  const { processedData, isLoading, error } = useGeoJSONCached(url, processData);
 
   if (isLoading || error || !processedData) {
     return null;

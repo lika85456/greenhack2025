@@ -9,6 +9,7 @@ import * as turf from '@turf/turf';
  * @returns The processed GeoJSON data with buffer zones around rivers
  */
 export const riversMiddleware = (geoJSON: FeatureCollection): FeatureCollection => {
+  return geoJSON;
   // Create a new FeatureCollection to store the buffer zones
   const bufferedCollection: FeatureCollection = {
     type: 'FeatureCollection',
