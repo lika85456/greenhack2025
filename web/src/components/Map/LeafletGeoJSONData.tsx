@@ -10,12 +10,14 @@ interface LeafletGeoJSONDataProps {
   url: string;
   pathOptions?: GeoJSONProps['pathOptions'];
   processData?: (data: FeatureCollection) => FeatureCollection;
+  color?: string; // Optional color prop for styling
 }
 
 export const LeafletGeoJSONData: React.FC<LeafletGeoJSONDataProps> = ({
   url, 
   pathOptions,
-  processData = (data) => data // Default processor just returns the data
+  processData = (data) => data, // Default processor just returns the data
+  color,
 }) => {
   const { geoJSONData, isLoading, error } = useGeoJSON(url);
   const [processedData, setProcessedData] = useState<FeatureCollection | null>(null);
@@ -34,10 +36,10 @@ export const LeafletGeoJSONData: React.FC<LeafletGeoJSONDataProps> = ({
 
   // Default style with blue color if not provided
   const defaultPathOptions = {
-    color: 'blue',
+    color: color,
     weight: 2,
     opacity: 1,
-    fillColor: 'blue',
+    fillColor: color,
     fillOpacity: 0.2,
     ...pathOptions,
   };

@@ -1,4 +1,4 @@
-import { FeatureCollection } from '../../../../hooks/useGeoJSON';
+import { FeatureCollection } from '../../../hooks/useGeoJSON';
 import * as turf from '@turf/turf';
 
 /**
@@ -8,7 +8,7 @@ import * as turf from '@turf/turf';
  * @param geoJSON The original GeoJSON data
  * @returns The processed GeoJSON data with buffer zones around rivers
  */
-export const processRiverData = (geoJSON: FeatureCollection): FeatureCollection => {
+export const riversMiddleware = (geoJSON: FeatureCollection): FeatureCollection => {
   // Create a new FeatureCollection to store the buffer zones
   const bufferedCollection: FeatureCollection = {
     type: 'FeatureCollection',

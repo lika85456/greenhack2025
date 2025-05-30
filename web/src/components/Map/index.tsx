@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 
-import MapTopBar from '#components/TopBar'
 import { AppConfig } from '#lib/AppConfig'
 import { LayerConfig, defaultLayers } from '#lib/LayerConfig'
 
@@ -13,6 +12,8 @@ import LeafleftMapContextProvider from './LeafletMapContextProvider'
 import { LayerControl } from './LayerControl'
 import { LeafletGeoJSONData } from './LeafletGeoJSONData'
 import useMapContext from './useMapContext'
+import { LeafletRivers } from './GeoData';
+import { riversMiddleware } from './GeoData/riversMiddleware';
 
 const LeafletMapContainer = dynamic(async () => (await import('./LeafletMapContainer')).LeafletMapContainer, {
   ssr: false,
@@ -94,19 +95,18 @@ const LeafletMapInner = () => {
         maxZoom={AppConfig.maxZoom}
         minZoom={AppConfig.minZoom}
       >
-        {!isLoading && (
-          <>
-            {layers
-              .filter(layer => layer.visible && layer.type === 'geojson')
-              .map(layer => (
-                <LeafletGeoJSONData
-                  key={layer.id}
-                  url={layer.url}
-                  pathOptions={layer.style}
-                />
-              ))}
-          </>
-        )}
+        <>
+          {!isLoading && layers
+            .filter(layer => layer.visible && layer.type === 'geojson')
+            .map(layer => (
+              <LeafletGeoJSONData
+                key={layer.id}
+                url={layer.url}
+                pathOptions={layer.style}
+                processData={layer.middleware}
+              />
+            ))}
+        </>
       </LeafletMapContainer>
     </div>
   )
