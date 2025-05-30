@@ -1,5 +1,8 @@
+"use client";
+
 import { LatLngExpression, MapOptions } from 'leaflet'
 import { MapContainer, TileLayer } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
 
 import useMapContext from './useMapContext'
 
