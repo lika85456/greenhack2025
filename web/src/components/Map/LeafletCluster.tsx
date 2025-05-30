@@ -14,7 +14,6 @@ import React, { FunctionComponent } from 'react'
 import { AppConfig } from '#lib/AppConfig'
 
 import LeafletDivIcon from './LeafletDivIcon'
-import MarkerIconWrapper from './LeafletMarker/MarkerIconWrapper'
 
 type ClusterEvents = {
   onClick?: LeafletMouseEventHandlerFn
@@ -42,7 +41,8 @@ const CreateMarkerClusterGroup = (props: MarkerClusterControl, context: LeafletC
     iconCreateFunction: cluster =>
       LeafletDivIcon({
         source: (
-          <MarkerIconWrapper color={props.color} icon={props.icon} label={`${cluster.getChildCount()}`} />
+          // <MarkerIconWrapper color={props.color} icon={props.icon} label={`${cluster.getChildCount()}`} />
+          <></>
         ),
         anchor: [AppConfig.ui.markerIconSize / 2, AppConfig.ui.markerIconSize / 2],
       }),

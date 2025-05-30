@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from 'next/dynamic'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useResizeDetector } from 'react-resize-detector'
 import type { LatLng } from 'leaflet'
 
 import { AppConfig } from '#lib/AppConfig'
 import { LayerConfig, defaultLayers } from '#lib/LayerConfig'
 import { FeatureCollection, useGeoJSONCached } from '../../hooks/useGeoJSONCached'; // Use cached version
+import { useLayerQuery } from '../../hooks/useLayerQuery';
 
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
 import { LayerControl } from './LayerControl'
@@ -54,7 +55,7 @@ const getViewState = (map: any) => {
 
 const LeafletMapInner = () => {
   const { map } = useMapContext()
-  const [layers, setLayers] = useState<LayerConfig[]>(defaultLayers)
+  const { layers, handleLayerToggle } = useLayerQuery(defaultLayers)
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [customMarkerIcon, setCustomMarkerIcon] = useState<any>(null)
   const [viewState, setViewState] = useState(getViewState(map))
@@ -105,13 +106,7 @@ const LeafletMapInner = () => {
     }
   }, [map])
 
-  const handleLayerToggle = useCallback((layerId: string, visible: boolean) => {
-    setLayers(prevLayers =>
-      prevLayers.map(layer =>
-        layer.id === layerId ? { ...layer, visible } : layer
-      )
-    )
-  }, [])
+
 
   const isLoading = !map || !viewportWidth || !viewportHeight
 

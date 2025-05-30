@@ -131,7 +131,7 @@ export const defaultLayers: LayerConfig[] = [
       name: "100-year Floodplains", // Changed from "ZU100"
       url: "https://tiles.arcgis.com/tiles/ZszVN9lBVA5x4VmX/arcgis/rest/services/ZU100/VectorTileServer/tile/{z}/{y}/{x}.pbf",
       type: "pbf",
-      visible: true,
+      visible: false,
       style: {
         color: "#007bff", // Adjusted to a blue color, more fitting for water
         weight: 1,
