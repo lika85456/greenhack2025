@@ -1,3 +1,5 @@
+"use client";
+
 import Leaflet from 'leaflet'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
@@ -7,11 +9,13 @@ import MapTopBar from '#components/TopBar'
 import { AppConfig } from '#lib/AppConfig'
 
 import LeafleftMapContextProvider from './LeafletMapContextProvider'
+import { LeafletGeoJSON } from './LeafletGeoJSON'
 import useMapContext from './useMapContext'
 
 const LeafletMapContainer = dynamic(async () => (await import('./LeafletMapContainer')).LeafletMapContainer, {
   ssr: false,
-})
+});
+
 
 export interface ViewState {
   minLat: number
@@ -90,7 +94,7 @@ const LeafletMapInner = () => {
         >
           {/* Plain simple map with no markers */}
           {!isLoading ? (
-            <></>
+            <LeafletGeoJSON url="/reky.geojson" />
           ) : (
             // we have to spawn at least one element to keep it happy
             // eslint-disable-next-line react/jsx-no-useless-fragment
