@@ -12,8 +12,6 @@ import LeafleftMapContextProvider from './LeafletMapContextProvider'
 import { LayerControl } from './LayerControl'
 import { LeafletGeoJSONData } from './LeafletGeoJSONData'
 import useMapContext from './useMapContext'
-import { LeafletRivers } from './GeoData';
-import { riversMiddleware } from './GeoData/riversMiddleware';
 
 const LeafletMapContainer = dynamic(async () => (await import('./LeafletMapContainer')).LeafletMapContainer, {
   ssr: false,

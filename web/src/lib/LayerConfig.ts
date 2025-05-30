@@ -32,5 +32,19 @@ export const defaultLayers: LayerConfig[] = [
     },
     middleware: riversMiddleware
   },
-  // Add more layers here as needed
+  {
+    id: "chko",
+    name: "National parks",
+    url: "/chko.geojson",
+    type: "geojson",
+    visible: true,
+    style: {
+      color: "green",
+      weight: 2,
+      opacity: 1,
+      fillColor: "green",
+      fillOpacity: 0.2,
+    },
+    middleware: undefined // No middleware for this layer
+  }
 ]; 
