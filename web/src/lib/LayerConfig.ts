@@ -143,5 +143,19 @@ export const defaultLayers: LayerConfig[] = [
         layerName: "ZU100", // This should match the layer name in the PBF, likely still ZU100
         maxZoom: 18, 
       }
-    }
+    },
+    {
+      id:"landslides",
+      name: "Landslides",
+      url: "/landslides.geojson",
+      type: "geojson",
+      visible: true,
+      style: {
+        color: "red",
+        weight: 2,
+        opacity: 1,
+        fillColor: "red",
+        fillOpacity: 0.2,
+      },
+    },
 ];
