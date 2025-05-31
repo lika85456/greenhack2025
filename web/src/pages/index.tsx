@@ -118,10 +118,44 @@ If it were to be further developed correctly, its focus could be expanded from t
         <p className="mb-4 text-lg leading-relaxed">
           We have a functional, very low-cost demo that demonstrates our idea is feasible. We use free open-source data. However, if the reliability of this data proves insufficient, it would be necessary to purchase some data. Additionally, funding would be required for further development and for hosting the service on a high-performance machine.
 However, by speeding up the process, we eliminate significant expenses (including costs of repeatedly planning the same route due to changing circumstances).
-What is new about your solution?*
+        </p>
+      </div>
+    </section>
+
+    <section className="my-8">
+      <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
+        <h3 className="mb-4 text-2xl font-semibold">What is new about your solution</h3>
+        <p className="mb-4 text-lg leading-relaxed">
 Our solution introduces a new way of combining all data relevant to the power line route designer, enabling them to quickly, efficiently, and reliably take environmental requirements into account. Until now, there have been many different sources with varying levels of relevance, but the outcome of our work is the ability to unify data from all these sources into a single tool
 The idea of calculating an environmental index enables a new way to account for the varying levels of relevance of different environmental factors. This makes it possible to truly find the best location for building individual pylons and the entire power line. It also opens the door to developing algorithms for finding the shortest route using this index as a criterion, evaluating existing routes to determine if a better path exists nearby, or generating a heatmap of optimal pylon placement by running the calculation across the entire map.
         </p>
+      </div>
+    </section>
+
+    <section className="my-8">
+      <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
+      <h3 className="mb-4 text-2xl font-semibold">What comes next</h3>
+      <p className="mb-4 text-lg leading-relaxed">
+        We would like to continue developing the application. Possible improvements are:
+      </p>
+      <ul className="list-disc list-inside space-y-2 text-lg leading-relaxed">
+        <li className="flex items-start">
+        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+        Adding additional specific data layers (e.g. bee protection zones, land management registry, bird migration routes).
+        </li>
+        <li className="flex items-start">
+        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+        Optimizing the map renderer to handle these data sources smoothly and without lag.
+        </li>
+        <li className="flex items-start">
+        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+        Calculating a heatmap for a defined area to support route generation or selection of the optimal path for power line towers.
+        </li>
+        <li className="flex items-start">
+        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+        Developing algorithms that leverage the environmental index (e.g. shortest route within a set threshold, evaluating existing infrastructure).
+        </li>
+      </ul>
       </div>
     </section>
 
