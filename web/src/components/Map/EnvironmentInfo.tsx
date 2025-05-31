@@ -20,7 +20,7 @@ interface EnvironmentInfoProps {
   heatmapVisible: boolean;
 }
 
-const calculateEnvironmentIndex = (
+export const calculateEnvironmentIndex = (
   clickedPosition: LatLng | null,
   riversStrength: number,
   parksStrength: number,
