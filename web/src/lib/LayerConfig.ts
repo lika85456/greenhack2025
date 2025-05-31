@@ -103,7 +103,7 @@ export const defaultLayers: LayerConfig[] = [
       name: "Forests",
       url: "/forests.geojson",
       type: "geojson",
-      visible: true,
+      visible: false,
       style: {
         color: "brown",
         weight: 2,
@@ -149,7 +149,7 @@ export const defaultLayers: LayerConfig[] = [
       name: "Landslides",
       url: "/landslides.geojson",
       type: "geojson",
-      visible: true,
+      visible: false,
       style: {
         color: "red",
         weight: 2,
