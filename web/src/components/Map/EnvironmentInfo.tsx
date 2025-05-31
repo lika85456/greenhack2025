@@ -12,57 +12,91 @@ interface EnvironmentInfoProps {
   clickedPosition: LatLng | null;
   riversData: FeatureCollection | null;
   parksData: FeatureCollection | null;
-  fieldsData: FeatureCollection | null;
+  forestsData: FeatureCollection | null;
+  q100Data: FeatureCollection | null;
   layers: LayerConfig[]; // Added layers prop
-  onGenerateHeatmap?: (riversStrength: number, parksStrength: number) => void;
-  onHideHeatmap?: () => void;
-  heatmapVisible?: boolean;
 }
 
-// Exported function to calculate environment index for any position
-export const calculateEnvironmentIndex = (
-  position: LatLng,
-  riversStrength: number,
-  parksStrength: number,
-  riversData: FeatureCollection | null,
-  parksData: FeatureCollection | null
-): number => {
-  const distanceToRiver = calculateDistanceToNearestFeature(position, riversData);
-  const distanceToPark = calculateDistanceToNearestFeature(position, parksData);
-  
-  let index = (riversStrength * 0.05) + (parksStrength * 0.03);
-  // Add penalty for being too close to a river or park
-  if (typeof distanceToRiver === 'number' && distanceToRiver < 0.1) { // less than 100m
-    index -= (1 - distanceToRiver / 0.1) * 10; // Penalty up to 10
-  }
-  if (typeof distanceToPark === 'number' && distanceToPark < 0.5) { // less than 500m
-    index -= (1 - distanceToPark / 0.5) * 5; // Penalty up to 5
-  }
-  // Add bonus for latitude/longitude (simple placeholder)
-  index += (position.lat + position.lng) / 200;
-  return Math.max(0, Math.min(100, index)); // Ensure index is between 0 and 100
-};
-
-// Internal function for the component's clicked position
-const calculateEnvironmentIndexForClick = (
+const calculateEnvironmentIndex = (
   clickedPosition: LatLng | null,
   riversStrength: number,
   parksStrength: number,
   distanceToRiver: number | string,
-  distanceToPark: number | string
+  distanceToPark: number | string,
+  distanceToForests: number | string,
+  q100Data: FeatureCollection | null,
+  forestsStrength: number
 ): number => {
   if (!clickedPosition) return 0;
-  let index = (riversStrength * 0.05) + (parksStrength * 0.03);
-  // Add penalty for being too close to a river or park
-  if (typeof distanceToRiver === 'number' && distanceToRiver < 0.1) { // less than 100m
-    index -= (1 - distanceToRiver / 0.1) * 10; // Penalty up to 10
+
+  // First check exclusion zones (Q100 and national parks)
+  // If point is in any of these, return index 0
+
+  // Check if point is in Q100 flood zone
+  if (q100Data && q100Data.features) {
+    const point = turf.point([clickedPosition.lng, clickedPosition.lat]);
+    for (const feature of q100Data.features) {
+      if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+        if (turf.booleanPointInPolygon(point, feature)) {
+          return 0; // Point is in flood zone -> index = 0
+        }
+      }
+    }
   }
-  if (typeof distanceToPark === 'number' && distanceToPark < 0.5) { // less than 500m
-    index -= (1 - distanceToPark / 0.5) * 5; // Penalty up to 5
+
+  // Check if point is in national park (distance 0 means inside)
+  if (typeof distanceToPark === 'number' && distanceToPark === 0) {
+    return 0; // Point is in national park -> index = 0
   }
-  // Add bonus for latitude/longitude (simple placeholder)
-  index += (clickedPosition.lat + clickedPosition.lng) / 200;
-  return Math.max(0, Math.min(100, index)); // Ensure index is between 0 and 100
+
+  // Calculate normalized weights from user inputs
+  const totalStrength = riversStrength + parksStrength + forestsStrength;
+  if (totalStrength === 0) return 0; // Prevent division by zero
+
+  // Initialize index
+  let index = 0;
+
+  // Define relevance thresholds (in kilometers)
+  const RIVER_THRESHOLD = 0.1;  // 100 meters for rivers
+  const FOREST_THRESHOLD = 0.1; // 100 meters for forests
+  const PARK_THRESHOLD = 2.0;   // 2 kilometers for parks
+
+  // Calculate river score
+  if (typeof distanceToRiver === 'number') {
+    // If distance is less than threshold (100m), calculate score 0-1
+    // Where 0m = score 0
+    // 50m = score 0.5
+    // 100m = score 1
+    // Above 100m score is always 1 (ideal)
+    const riverScore = distanceToRiver < RIVER_THRESHOLD ?
+      distanceToRiver / RIVER_THRESHOLD : // Linear increase from 0 to 1 within threshold
+      1.0; // Maximum when exceeding threshold
+    
+    index += riverScore * (riversStrength / totalStrength);
+  }
+
+  // Calculate park score
+  if (typeof distanceToPark === 'number') {
+    // Similar logic as rivers but with 2km threshold
+    const parkScore = distanceToPark < PARK_THRESHOLD ?
+      distanceToPark / PARK_THRESHOLD : // Linear increase from 0 to 1 within threshold
+      1.0; // Maximum when exceeding threshold
+    
+    index += parkScore * (parksStrength / totalStrength);
+  }
+
+  // Calculate forest score
+  if (typeof distanceToForests === 'number') {
+    // Same logic as rivers - 100m threshold
+    const forestScore = distanceToForests < FOREST_THRESHOLD ?
+      distanceToForests / FOREST_THRESHOLD : // Linear increase from 0 to 1 within threshold
+      1.0; // Maximum when exceeding threshold
+    
+    index += forestScore * (forestsStrength / totalStrength);
+  }
+
+  // Convert to 0-100 scale and ensure range
+  return Math.max(0, Math.min(100, index * 100));
 };
 
 const calculateDistanceToNearestFeature = (
@@ -192,53 +226,52 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
   clickedPosition,
   riversData,
   parksData,
-  fieldsData,
+  forestsData,
+  q100Data,
   layers,
-  onGenerateHeatmap,
-  onHideHeatmap,
-  heatmapVisible = false,
 }) => {
   const [riversStrength, setRiversStrength] = useState(50);
   const [parksStrength, setParksStrength] = useState(50);
+  const [forestsStrength, setForestsStrength] = useState(50);
   const [environmentIndex, setEnvironmentIndex] = useState(0);
-  const [isGeneratingHeatmap, setIsGeneratingHeatmap] = useState(false);
 
   const [distanceToRiver, setDistanceToRiver] = useState<number | string>('N/A');
   const [distanceToPark, setDistanceToPark] = useState<number | string>('N/A');
-  const [distanceToFields, setDistanceToFields] = useState<number | string>('N/A');
+  const [distanceToForests, setDistanceToForests] = useState<number | string>('N/A');
 
   useEffect(() => {
     setDistanceToRiver(calculateDistanceToNearestFeature(clickedPosition, riversData));
     setDistanceToPark(calculateDistanceToNearestFeature(clickedPosition, parksData));
 
-    const fieldsLayer = layers.find(layer => layer.id === 'fields');
-    if (fieldsLayer?.visible && fieldsData && clickedPosition) {
-      setDistanceToFields(calculateDistanceToNearestFeature(clickedPosition, fieldsData));
+    const forestsLayer = layers.find(layer => layer.id === 'forests');
+    if (forestsLayer?.visible && forestsData && clickedPosition) {
+      setDistanceToForests(calculateDistanceToNearestFeature(clickedPosition, forestsData));
     } else {
-      setDistanceToFields('N/A');
+      setDistanceToForests('N/A');
     }
-  }, [clickedPosition, riversData, parksData, fieldsData, layers]);
+  }, [clickedPosition, riversData, parksData, forestsData, q100Data, layers]);
 
   // Recalculate environment index when position, distances, or slider values change
   useEffect(() => {
-    const newIndex = calculateEnvironmentIndexForClick(
+    const newIndex = calculateEnvironmentIndex(
       clickedPosition,
       riversStrength,
       parksStrength,
       distanceToRiver,
-      distanceToPark
+      distanceToPark,
+      distanceToForests,
+      q100Data,
+      forestsStrength
     );
     setEnvironmentIndex(newIndex);
-  }, [clickedPosition, riversStrength, parksStrength, distanceToRiver, distanceToPark]);
-
-
+  }, [clickedPosition, riversStrength, parksStrength, forestsStrength, distanceToRiver, distanceToPark, distanceToForests, q100Data]);
 
   if (!clickedPosition) {
     return (
-        <div className="absolute bottom-4 right-4 z-[1000] bg-white p-4 rounded-lg shadow-lg max-w-xs w-full">
-            <h3 className="text-lg font-semibold mb-3">Environment Info</h3>
-            <p className="text-sm text-gray-500">Click on the map to see details.</p>
-        </div>
+      <div className="absolute bottom-4 right-4 z-[1000] bg-white p-4 rounded-lg shadow-lg max-w-xs w-full">
+        <h3 className="text-lg font-semibold mb-3">Environment Info</h3>
+        <p className="text-sm text-gray-500">Click on the map to see details.</p>
+      </div>
     );
   }
 
@@ -255,9 +288,9 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
         <div>
           <strong>Distance to closest national park:</strong> {typeof distanceToPark === 'number' ? `${distanceToPark.toFixed(2)} km` : distanceToPark}
         </div>
-        {distanceToFields !== 'N/A' && ( // Conditionally render distance to fields
+        {distanceToForests !== 'N/A' && (
           <div>
-            <strong>Distance to closest field:</strong> {typeof distanceToFields === 'number' ? `${(distanceToFields * 1000).toFixed(0)} m` : distanceToFields}
+            <strong>Distance to closest forest:</strong> {typeof distanceToForests === 'number' ? `${(distanceToForests * 1000).toFixed(0)} m` : distanceToForests}
           </div>
         )}
         <div className="pt-2">
@@ -281,6 +314,18 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
             max="100"
             value={parksStrength}
             onChange={(e) => setParksStrength(Number(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+        </div>
+        <div>
+          <label htmlFor="forestsStrength" className="block mb-1">Forests Influence: {forestsStrength}</label>
+          <input
+            type="range"
+            id="forestsStrength"
+            min="0"
+            max="100"
+            value={forestsStrength}
+            onChange={(e) => setForestsStrength(Number(e.target.value))}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           />
         </div>
@@ -326,7 +371,19 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
             )}
           </div>
         )} */}
-      </div>
+          <div className="text-xs text-gray-600">
+            Note: Index is 0 if in flood zone (Q100) or national park
+          </div>
+          <div className="text-xs text-gray-600">
+            Higher score means better distance from natural features:
+          </div>
+          <div className="text-xs text-gray-600">
+            • Rivers and Forests: optimal distance {'>='} 100m
+          </div>
+          <div className="text-xs text-gray-600">
+            • Parks: optimal distance {'>='} 2km
+          </div>
+        </div>
     </div>
   );
 };
