@@ -1,6 +1,5 @@
 import { electricalMiddleware } from "#components/Map/GeoData/electricalMiddleware";
 import { riversMiddleware } from "#components/Map/GeoData/riversMiddleware";
-import { airportsMiddleware } from "#components/Map/GeoData/airportsMiddleware";
 
 export interface LayerConfig {
   id: string;
@@ -172,6 +171,5 @@ export const defaultLayers: LayerConfig[] = [
         fillColor: "gray",
         fillOpacity: 0.2,
       },
-      middleware: airportsMiddleware
     },
 ];
