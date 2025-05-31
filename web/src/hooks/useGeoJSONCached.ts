@@ -54,12 +54,20 @@ export const useGeoJSONCached = (
         if (dataCache.has(url)) {
           rawData = dataCache.get(url)!;
         } else {
-          // Fetch data
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch GeoJSON: ${response.status}`);
+          // Handle data URLs differently from regular URLs
+          if (url.startsWith('data:')) {
+            // Parse data URL
+            const base64Data = url.split(',')[1];
+            const jsonString = atob(base64Data);
+            rawData = JSON.parse(jsonString);
+          } else {
+            // Fetch data from regular URL
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`Failed to fetch GeoJSON: ${response.status}`);
+            }
+            rawData = await response.json();
           }
-          rawData = await response.json();
           dataCache.set(url, rawData);
         }
 

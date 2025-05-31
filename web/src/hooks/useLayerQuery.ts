@@ -74,8 +74,25 @@ export const useLayerQuery = (initialLayers: LayerConfig[]) => {
     });
   }, [updateQuery]);
 
+  // Handle adding new layer
+  const handleLayerAdd = useCallback((newLayer: LayerConfig) => {
+    setLayers(prevLayers => {
+      const updatedLayers = [...prevLayers, newLayer];
+      
+      // Update URL query with new visible layers
+      const visibleLayerIds = updatedLayers
+        .filter(layer => layer.visible)
+        .map(layer => layer.id);
+      
+      updateQuery(visibleLayerIds);
+      
+      return updatedLayers;
+    });
+  }, [updateQuery]);
+
   return {
     layers,
     handleLayerToggle,
+    handleLayerAdd,
   };
 };

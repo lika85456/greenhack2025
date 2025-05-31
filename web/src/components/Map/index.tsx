@@ -56,7 +56,7 @@ const getViewState = (map: any) => {
 
 const LeafletMapInner = () => {
   const { map } = useMapContext()
-  const { layers, handleLayerToggle } = useLayerQuery(defaultLayers)
+  const { layers, handleLayerToggle, handleLayerAdd } = useLayerQuery(defaultLayers)
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [customMarkerIcon, setCustomMarkerIcon] = useState<any>(null)
   const [viewState, setViewState] = useState(getViewState(map))
@@ -67,7 +67,8 @@ const LeafletMapInner = () => {
   // Fetch GeoJSON data for layers needed by EnvironmentInfo using cached hook
   const { processedData: riversData } = useGeoJSONCached('/reky.geojson');
   const { processedData: parksData } = useGeoJSONCached('/chko.geojson');
-  const { processedData: fieldsData } = useGeoJSONCached('/fields.geojson');
+  const { processedData: forestsData } = useGeoJSONCached('/forests.geojson');
+  // Note: q100Data would need to be fetched from the PBF layer, but for now we'll pass null
 
   const {
     width: viewportWidth,
@@ -135,12 +136,13 @@ const LeafletMapInner = () => {
 
   return (
     <div className="absolute h-full w-full overflow-hidden" ref={viewportRef}>
-      <LayerControl layers={layers} onLayerToggle={handleLayerToggle} />
+      <LayerControl layers={layers} onLayerToggle={handleLayerToggle} onLayerAdd={handleLayerAdd} />
       <EnvironmentInfo 
         clickedPosition={clickedPosition}
         riversData={riversData}
         parksData={parksData}
-        fieldsData={fieldsData} 
+        forestsData={forestsData}
+        q100Data={null}
         layers={layers}
         onGenerateHeatmap={handleGenerateHeatmap}
         onHideHeatmap={handleHideHeatmap}

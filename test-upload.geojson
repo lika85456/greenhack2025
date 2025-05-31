@@ -1,0 +1,33 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Test Area 1",
+        "description": "A test polygon for upload functionality"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [14.4, 50.08],
+          [14.42, 50.08],
+          [14.42, 50.09],
+          [14.4, 50.09],
+          [14.4, 50.08]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Test Point 1",
+        "description": "A test point for upload functionality"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [14.41, 50.085]
+      }
+    }
+  ]
+}
