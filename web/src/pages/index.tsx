@@ -53,7 +53,7 @@ const Home = () => (
     <section className="my-8">
       <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
         <h3 className="mb-4 text-2xl font-semibold"></h3>
-      <Image src="/motto.png" alt="Our Team Motto" width={840} height={200} className="rounded-lg shadow-md mx-auto" />
+      <Image src="/motto.webp" alt="Our Team Motto" width={840} height={200} className="rounded-lg shadow-md mx-auto" />
       
       <blockquote className="mt-6 border-l-4 border-primary pl-4 italic text-gray-700">
         <p className="text-lg">
