@@ -332,6 +332,43 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
           <div className="text-xs text-gray-600 mt-1">
             (0 = worst, 100 = best)
           </div>
+        </div>
+{/**        {onGenerateHeatmap && (
+          <div className="pt-3">
+            {!heatmapVisible ? (
+              <button
+                onClick={async () => {
+                  setIsGeneratingHeatmap(true);
+                  try {
+                    await onGenerateHeatmap(riversStrength, parksStrength);
+                  } finally {
+                    // Add a small delay to show the progress bar
+                    setTimeout(() => setIsGeneratingHeatmap(false), 1000);
+                  }
+                }}
+                disabled={isGeneratingHeatmap}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md border border-blue-700"
+              >
+                {isGeneratingHeatmap ? 'Generating...' : 'Generate Heatmap'}
+              </button>
+            ) : (
+              <button
+                onClick={onHideHeatmap}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md border border-red-700"
+              >
+                Hide Heatmap
+              </button>
+            )}
+            {isGeneratingHeatmap && (
+              <div className="mt-2">
+                <div className="text-xs text-gray-600 mb-1">Generating heatmap...</div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+                </div>
+              </div>
+            )}
+          </div>
+        )} */}
           <div className="text-xs text-gray-600">
             Note: Index is 0 if in flood zone (Q100) or national park
           </div>
@@ -345,7 +382,6 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
             • Parks: optimal distance {'>='} 2km
           </div>
         </div>
-      </div>
     </div>
   );
 };
