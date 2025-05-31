@@ -6,7 +6,7 @@ import { AppConfig } from '#lib/AppConfig'
 import { MarkerCategoriesValues } from '#lib/MarkerCategories'
 import { PlaceValues } from '#lib/Places'
 
-const MarkerIconWrapper = dynamic(() => import('#components/Map/LeafletMarker/MarkerIconWrapper'))
+// const MarkerIconWrapper = dynamic(() => import('#components/Map/LeafletMarker/MarkerIconWrapper'))
 const Button = dynamic(() => import('#components/common/Button'))
 
 interface LeafletPopupProps extends PopupProps {
@@ -48,7 +48,7 @@ const LeafletPopup = ({
             <X size={AppConfig.ui.markerIconSize} />
           </Button>
           <div className="absolute left-0 top-0 mt-5 flex w-full justify-center">
-            <MarkerIconWrapper color={color} icon={icon} />
+            {/*<MarkerIconWrapper color={color} icon={icon} />*/}
           </div>
           <div
             className="flex w-full flex-col justify-center p-3 pt-6 text-center"

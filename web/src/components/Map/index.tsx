@@ -15,6 +15,7 @@ import { LayerControl } from './LayerControl'
 import { LeafletGeoJSONData } from './LeafletGeoJSONData'
 import { LeafletPBFData } from './LeafletPBFData'; // Import LeafletPBFData
 import { EnvironmentInfo } from './EnvironmentInfo'
+import { LeafletHeatmap } from './LeafletHeatmap'
 import useMapContext from './useMapContext'
 
 // Dynamically import Leaflet components with no SSR
@@ -59,6 +60,9 @@ const LeafletMapInner = () => {
   const [clickedPosition, setClickedPosition] = useState<LatLng | null>(null)
   const [customMarkerIcon, setCustomMarkerIcon] = useState<any>(null)
   const [viewState, setViewState] = useState(getViewState(map))
+  const [heatmapVisible, setHeatmapVisible] = useState(false)
+  const [heatmapSettings, setHeatmapSettings] = useState({ riversStrength: 50, parksStrength: 50 })
+  const [animationSpeed, setAnimationSpeed] = useState(50)
 
   // Fetch GeoJSON data for layers needed by EnvironmentInfo using cached hook
   const { processedData: riversData } = useGeoJSONCached('/reky.geojson');
@@ -106,7 +110,22 @@ const LeafletMapInner = () => {
     }
   }, [map])
 
+  // Handle heatmap generation
+  const handleGenerateHeatmap = async (riversStrength: number, parksStrength: number) => {
+    return new Promise<void>((resolve) => {
+      setHeatmapSettings({ riversStrength, parksStrength })
+      setHeatmapVisible(true)
+      // Simulate processing time
+      setTimeout(() => {
+        resolve()
+      }, 500)
+    })
+  }
 
+  // Handle hiding heatmap
+  const handleHideHeatmap = () => {
+    setHeatmapVisible(false)
+  }
 
   const isLoading = !map || !viewportWidth || !viewportHeight
 
@@ -123,6 +142,9 @@ const LeafletMapInner = () => {
         parksData={parksData}
         fieldsData={fieldsData} 
         layers={layers}
+        onGenerateHeatmap={handleGenerateHeatmap}
+        onHideHeatmap={handleHideHeatmap}
+        heatmapVisible={heatmapVisible}
       />
       <LeafletMapContainer
         center={defaultCenter}
@@ -155,6 +177,16 @@ const LeafletMapInner = () => {
                 Clicked at: <br /> {clickedPosition.lat.toFixed(5)}, {clickedPosition.lng.toFixed(5)}
               </Popup>
             </Marker>
+          )}
+          {!isLoading && (
+            <LeafletHeatmap
+              riversData={riversData}
+              parksData={parksData}
+              riversStrength={heatmapSettings.riversStrength}
+              parksStrength={heatmapSettings.parksStrength}
+              visible={heatmapVisible}
+              animationSpeed={animationSpeed}
+            />
           )}
         </>
       </LeafletMapContainer>

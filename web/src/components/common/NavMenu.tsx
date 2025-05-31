@@ -22,7 +22,7 @@ const NavMenu = ({ variant = NavMenuVariant.INTRO }: NavMenuProps) => {
       <NavMenuItem href="/" label="Intro" icon={<Home size={navIconSize} />} />
       <NavMenuItem href="/map" label="Map Example" icon={<Compass size={navIconSize} />} />
       <NavMenuItem
-        href="https://github.com/richard-unterberg/typescript-next-leaflet-starter"
+        href="https://github.com/lika85456/greenhack2025"
         label="Github"
         icon={<Github size={navIconSize} />}
         external

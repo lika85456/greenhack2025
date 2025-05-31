@@ -14,9 +14,37 @@ interface EnvironmentInfoProps {
   parksData: FeatureCollection | null;
   fieldsData: FeatureCollection | null;
   layers: LayerConfig[]; // Added layers prop
+  onGenerateHeatmap?: (riversStrength: number, parksStrength: number) => void;
+  onHideHeatmap?: () => void;
+  heatmapVisible?: boolean;
 }
 
-const calculateEnvironmentIndex = (
+// Exported function to calculate environment index for any position
+export const calculateEnvironmentIndex = (
+  position: LatLng,
+  riversStrength: number,
+  parksStrength: number,
+  riversData: FeatureCollection | null,
+  parksData: FeatureCollection | null
+): number => {
+  const distanceToRiver = calculateDistanceToNearestFeature(position, riversData);
+  const distanceToPark = calculateDistanceToNearestFeature(position, parksData);
+  
+  let index = (riversStrength * 0.05) + (parksStrength * 0.03);
+  // Add penalty for being too close to a river or park
+  if (typeof distanceToRiver === 'number' && distanceToRiver < 0.1) { // less than 100m
+    index -= (1 - distanceToRiver / 0.1) * 10; // Penalty up to 10
+  }
+  if (typeof distanceToPark === 'number' && distanceToPark < 0.5) { // less than 500m
+    index -= (1 - distanceToPark / 0.5) * 5; // Penalty up to 5
+  }
+  // Add bonus for latitude/longitude (simple placeholder)
+  index += (position.lat + position.lng) / 200;
+  return Math.max(0, Math.min(100, index)); // Ensure index is between 0 and 100
+};
+
+// Internal function for the component's clicked position
+const calculateEnvironmentIndexForClick = (
   clickedPosition: LatLng | null,
   riversStrength: number,
   parksStrength: number,
@@ -166,10 +194,14 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
   parksData,
   fieldsData,
   layers,
+  onGenerateHeatmap,
+  onHideHeatmap,
+  heatmapVisible = false,
 }) => {
   const [riversStrength, setRiversStrength] = useState(50);
   const [parksStrength, setParksStrength] = useState(50);
   const [environmentIndex, setEnvironmentIndex] = useState(0);
+  const [isGeneratingHeatmap, setIsGeneratingHeatmap] = useState(false);
 
   const [distanceToRiver, setDistanceToRiver] = useState<number | string>('N/A');
   const [distanceToPark, setDistanceToPark] = useState<number | string>('N/A');
@@ -189,7 +221,7 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
 
   // Recalculate environment index when position, distances, or slider values change
   useEffect(() => {
-    const newIndex = calculateEnvironmentIndex(
+    const newIndex = calculateEnvironmentIndexForClick(
       clickedPosition,
       riversStrength,
       parksStrength,
@@ -258,6 +290,42 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
             (0 = worst, 100 = best)
           </div>
         </div>
+        {onGenerateHeatmap && (
+          <div className="pt-3">
+            {!heatmapVisible ? (
+              <button
+                onClick={async () => {
+                  setIsGeneratingHeatmap(true);
+                  try {
+                    await onGenerateHeatmap(riversStrength, parksStrength);
+                  } finally {
+                    // Add a small delay to show the progress bar
+                    setTimeout(() => setIsGeneratingHeatmap(false), 1000);
+                  }
+                }}
+                disabled={isGeneratingHeatmap}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md border border-blue-700"
+              >
+                {isGeneratingHeatmap ? 'Generating...' : 'Generate Heatmap'}
+              </button>
+            ) : (
+              <button
+                onClick={onHideHeatmap}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-md border border-red-700"
+              >
+                Hide Heatmap
+              </button>
+            )}
+            {isGeneratingHeatmap && (
+              <div className="mt-2">
+                <div className="text-xs text-gray-600 mb-1">Generating heatmap...</div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
