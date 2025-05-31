@@ -1,4 +1,4 @@
-# Smart Powerline Grid Planning
+# Smart Powerline Grid Planning - Prostě team
 
 A web tool for projectants who plan powerlines. Check it out at [prosteteam.fun](https://prosteteam.fun)
 
@@ -21,3 +21,9 @@ cd web
 bun install
 bun dev
 ```
+
+# Screenshots
+
+![Bad index](docs/gh_bad.png)
+![Good index](docs/gh_good.png)
+
