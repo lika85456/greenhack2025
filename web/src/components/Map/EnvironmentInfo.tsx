@@ -290,7 +290,7 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
             (0 = worst, 100 = best)
           </div>
         </div>
-        {onGenerateHeatmap && (
+{/**        {onGenerateHeatmap && (
           <div className="pt-3">
             {!heatmapVisible ? (
               <button
@@ -325,7 +325,7 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
               </div>
             )}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
