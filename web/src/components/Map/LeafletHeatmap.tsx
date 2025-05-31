@@ -8,8 +8,11 @@ import useMapContext from './useMapContext';
 interface LeafletHeatmapProps {
   riversData: FeatureCollection | null;
   parksData: FeatureCollection | null;
+  forestsData: FeatureCollection | null; // Added
+  q100Data: FeatureCollection | null;    // Added
   riversStrength: number;
   parksStrength: number;
+  forestsStrength: number; // Added
   visible: boolean;
   animationSpeed?: number; // milliseconds between adding points
 }
@@ -17,8 +20,11 @@ interface LeafletHeatmapProps {
 export const LeafletHeatmap: React.FC<LeafletHeatmapProps> = ({
   riversData,
   parksData,
+  forestsData,  // Added
+  q100Data,     // Added
   riversStrength,
   parksStrength,
+  forestsStrength, // Added
   visible,
   animationSpeed = 50, // default 50ms between points
 }) => {
@@ -68,12 +74,20 @@ export const LeafletHeatmap: React.FC<LeafletHeatmapProps> = ({
         for (let lat = bounds.getSouth(); lat <= bounds.getNorth(); lat += latStep) {
           for (let lng = bounds.getWest(); lng <= bounds.getEast(); lng += lngStep) {
             const position = new L.LatLng(lat, lng);
+            // TODO: Implement actual distance calculations for heatmap accuracy
+            const placeholderDistanceToRiver = 0; // Placeholder
+            const placeholderDistanceToPark = 0;   // Placeholder
+            const placeholderDistanceToForests = 0; // Placeholder
+
             const environmentIndex = calculateEnvironmentIndex(
               position,
               riversStrength,
               parksStrength,
-              riversData,
-              parksData
+              placeholderDistanceToRiver,    // Was riversData
+              placeholderDistanceToPark,     // Was parksData
+              placeholderDistanceToForests,  // Added
+              q100Data,                    // Added
+              forestsStrength              // Added
             );
             
             // Normalize the environment index to a value between 0 and 1 for heatmap intensity
@@ -130,7 +144,7 @@ export const LeafletHeatmap: React.FC<LeafletHeatmapProps> = ({
       }
       setIsAnimating(false);
     };
-  }, [map, riversData, parksData, riversStrength, parksStrength, visible]);
+  }, [map, riversData, parksData, forestsData, q100Data, riversStrength, parksStrength, forestsStrength, visible]); // Added new props to dependency array
 
   const startPointAnimation = () => {
     if (animationRef.current) {
