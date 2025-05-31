@@ -92,6 +92,7 @@ The planning process is slowed down by the fact that designers must search for d
       <Link
         href="https://github.com/lika85456/greenhack2025"
         className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 mt-4 mb-4 text-lg font-semibold text-white shadow-md transition-all hover:bg-primary/90 hover:shadow-lg"
+        target="_blank"
       >
         <Github size={24} />
         View on GitHub
@@ -137,6 +138,7 @@ The idea of calculating an environmental index enables a new way to account for 
         <Link
           href="https://github.com/lika85456/greenhack2025"
           className="text-primary"
+          target="_blank"
         >
           greenhack2025
         </Link>
