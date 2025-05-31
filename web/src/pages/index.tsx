@@ -124,11 +124,54 @@ However, by speeding up the process, we eliminate significant expenses (includin
 
     <section className="my-8">
       <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
-        <h3 className="mb-4 text-2xl font-semibold">What is new about your solution</h3>
-        <p className="mb-4 text-lg leading-relaxed">
-Our solution introduces a new way of combining all data relevant to the power line route designer, enabling them to quickly, efficiently, and reliably take environmental requirements into account. Until now, there have been many different sources with varying levels of relevance, but the outcome of our work is the ability to unify data from all these sources into a single tool
-The idea of calculating an environmental index enables a new way to account for the varying levels of relevance of different environmental factors. This makes it possible to truly find the best location for building individual pylons and the entire power line. It also opens the door to developing algorithms for finding the shortest route using this index as a criterion, evaluating existing routes to determine if a better path exists nearby, or generating a heatmap of optimal pylon placement by running the calculation across the entire map.
-        </p>
+      <h3 className="mb-4 text-2xl font-semibold">What is new about your solution</h3>
+      <p className="mb-4 text-lg leading-relaxed">
+  Our solution introduces a new way of combining all data relevant to the power line route designer, enabling them to quickly, efficiently, and reliably take environmental requirements into account. Until now, there have been many different sources with varying levels of relevance, but the outcome of our work is the ability to unify data from all these sources into a single tool
+  The idea of calculating an environmental index enables a new way to account for the varying levels of relevance of different environmental factors. This makes it possible to truly find the best location for building individual pylons and the entire power line. It also opens the door to developing algorithms for finding the shortest route using this index as a criterion, evaluating existing routes to determine if a better path exists nearby, or generating a heatmap of optimal pylon placement by running the calculation across the entire map.
+      </p>
+      </div>
+    </section>
+
+    <section className="my-8">
+      <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
+      <h3 className="mb-4 text-2xl font-semibold">Data Sources for Future Solution</h3>
+      <p className="mb-4 text-lg leading-relaxed">
+      These are some of the data sources we plan to integrate into our solution to provide even more comprehensive environmental insights:
+      </p>
+      <div className="overflow-x-auto">
+      <table className="min-w-full table-auto border-collapse border border-gray-300">
+      <thead className="bg-gray-200">
+      <tr>
+      <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700">Preview</th>
+      <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700">Data Layer</th>
+      <th className="border border-gray-300 px-4 py-2 text-left text-sm font-semibold text-gray-700">Source URL</th>
+      </tr>
+      </thead>
+      <tbody className="bg-white">
+      {[
+      { name: 'Global Forest Change (Deforestation)', url: 'https://earthenginepartners.appspot.com/' },
+      { name: 'Mines and undermined areas', url: 'https://mapy.geology.cz/dulni_dila_poddolovani/#' },
+      { name: 'Urban planning / Land-use plan (for example for Havlíčkův Brod)', url: 'https://mapy.kr-vysocina.cz/pupo_pfa/apps/webappviewer/index.html?id=61cce275226a49a69c5b95254afda53d&citycode=568414' },
+      { name: 'Slope deformations and landslides', url: 'https://mapy.geology.cz/svahove_deformace/#' },
+      { name: 'Europe bird migration map', url: 'https://bbecquet.net/articles/2022/05/bird-tracking-map/' },
+      { name: 'Snow, wind and earthquake-prone areas', url: 'https://www.dlubal.com/cs/oblasti-zatizeni-snehem-vetrem-a-zemetresenim/snih-csn-en-1991-1-3.html?&center=49.75997752330658,16.907958984375004&zoom=7&marker=50.075865,14.434609#&center=49.59669233279693,17.061767578125004&zoom=7&marker=50.075865,14.434609' },
+      { name: 'Floods zones', url: 'https://chmi.maps.arcgis.com/apps/instant/sidebar/index.html?appid=34fa7f95912b4be3b9d8e3f856dac0ad' },
+      ].map((item, index) => (
+      <tr key={index} className="hover:bg-gray-50">
+      <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">
+        <Image src={`/${index + 1}.png`} alt={`${item.name} preview`} width={100} height={75} className="rounded-sm" />
+      </td>
+      <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800">{item.name}</td>
+      <td className="border border-gray-300 px-4 py-2 text-sm text-gray-800 break-all">
+      <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+        {item.url.length > 100 ? `${item.url.substring(0, 100)}...` : item.url}
+      </a>
+      </td>
+      </tr>
+      ))}
+      </tbody>
+      </table>
+      </div>
       </div>
     </section>
 
@@ -136,25 +179,25 @@ The idea of calculating an environmental index enables a new way to account for 
       <div className="rounded-lg bg-gray-50 p-6 shadow-sm">
       <h3 className="mb-4 text-2xl font-semibold">What comes next</h3>
       <p className="mb-4 text-lg leading-relaxed">
-        We would like to continue developing the application. Possible improvements are:
+      We would like to continue developing the application. Possible improvements are:
       </p>
       <ul className="list-disc list-inside space-y-2 text-lg leading-relaxed">
-        <li className="flex items-start">
-        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
-        Adding additional specific data layers (e.g. bee protection zones, land management registry, bird migration routes).
-        </li>
-        <li className="flex items-start">
-        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
-        Optimizing the map renderer to handle these data sources smoothly and without lag.
-        </li>
-        <li className="flex items-start">
-        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
-        Calculating a heatmap for a defined area to support route generation or selection of the optimal path for power line towers.
-        </li>
-        <li className="flex items-start">
-        <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
-        Developing algorithms that leverage the environmental index (e.g. shortest route within a set threshold, evaluating existing infrastructure).
-        </li>
+      <li className="flex items-start">
+      <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+      Adding additional specific data layers (e.g. bee protection zones, land management registry, bird migration routes).
+      </li>
+      <li className="flex items-start">
+      <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+      Optimizing the map renderer to handle these data sources smoothly and without lag.
+      </li>
+      <li className="flex items-start">
+      <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+      Calculating a heatmap for a defined area to support route generation or selection of the optimal path for power line towers.
+      </li>
+      <li className="flex items-start">
+      <Leaf size={20} className="mr-2 mt-1 flex-shrink-0 text-primary" />
+      Developing algorithms that leverage the environmental index (e.g. shortest route within a set threshold, evaluating existing infrastructure).
+      </li>
       </ul>
       </div>
     </section>
