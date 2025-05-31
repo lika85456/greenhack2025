@@ -15,7 +15,6 @@ import { LayerControl } from './LayerControl'
 import { LeafletGeoJSONData } from './LeafletGeoJSONData'
 import { LeafletPBFData } from './LeafletPBFData'; // Import LeafletPBFData
 import { EnvironmentInfo } from './EnvironmentInfo'
-import { LeafletHeatmap } from './LeafletHeatmap'
 import useMapContext from './useMapContext'
 
 // Dynamically import Leaflet components with no SSR
@@ -179,16 +178,6 @@ const LeafletMapInner = () => {
                 Clicked at: <br /> {clickedPosition.lat.toFixed(5)}, {clickedPosition.lng.toFixed(5)}
               </Popup>
             </Marker>
-          )}
-          {!isLoading && (
-            <LeafletHeatmap
-              riversData={riversData}
-              parksData={parksData}
-              riversStrength={heatmapSettings.riversStrength}
-              parksStrength={heatmapSettings.parksStrength}
-              visible={heatmapVisible}
-              animationSpeed={animationSpeed}
-            />
           )}
         </>
       </LeafletMapContainer>

@@ -24,8 +24,10 @@ const LeafletPBFDataInner = ({ layer }: LeafletPBFDataProps) => {
 
     const initVectorTile = async () => {
       const L = (await import('leaflet')).default;
+      // @ts-ignore
       await import('leaflet.vectorgrid');
 
+      // @ts-ignore
       const vectorTile = L.vectorGrid.protobuf(layer.url, {
         vectorTileLayerStyles: {
           ZU100: {
