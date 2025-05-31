@@ -14,7 +14,10 @@ interface EnvironmentInfoProps {
   parksData: FeatureCollection | null;
   forestsData: FeatureCollection | null;
   q100Data: FeatureCollection | null;
-  layers: LayerConfig[]; // Added layers prop
+  layers: LayerConfig[];
+  onGenerateHeatmap: (riversStrength: number, parksStrength: number) => Promise<void>;
+  onHideHeatmap: () => void;
+  heatmapVisible: boolean;
 }
 
 const calculateEnvironmentIndex = (
@@ -229,6 +232,9 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
   forestsData,
   q100Data,
   layers,
+  onGenerateHeatmap,
+  onHideHeatmap,
+  heatmapVisible,
 }) => {
   const [riversStrength, setRiversStrength] = useState(50);
   const [parksStrength, setParksStrength] = useState(50);
@@ -242,13 +248,7 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
   useEffect(() => {
     setDistanceToRiver(calculateDistanceToNearestFeature(clickedPosition, riversData));
     setDistanceToPark(calculateDistanceToNearestFeature(clickedPosition, parksData));
-
-    const forestsLayer = layers.find(layer => layer.id === 'forests');
-    if (forestsLayer?.visible && forestsData && clickedPosition) {
-      setDistanceToForests(calculateDistanceToNearestFeature(clickedPosition, forestsData));
-    } else {
-      setDistanceToForests('N/A');
-    }
+    setDistanceToForests(calculateDistanceToNearestFeature(clickedPosition, forestsData)); 
   }, [clickedPosition, riversData, parksData, forestsData, q100Data, layers]);
 
   // Recalculate environment index when position, distances, or slider values change
@@ -288,11 +288,9 @@ export const EnvironmentInfo: React.FC<EnvironmentInfoProps> = ({
         <div>
           <strong>Distance to closest national park:</strong> {typeof distanceToPark === 'number' ? `${distanceToPark.toFixed(2)} km` : distanceToPark}
         </div>
-        {distanceToForests !== 'N/A' && (
-          <div>
-            <strong>Distance to closest forest:</strong> {typeof distanceToForests === 'number' ? `${(distanceToForests * 1000).toFixed(0)} m` : distanceToForests}
-          </div>
-        )}
+        <div>
+          <strong>Distance to closest forest:</strong> {typeof distanceToForests === 'number' ? `${(distanceToForests * 1000).toFixed(0)} m` : distanceToForests}
+        </div>
         <div className="pt-2">
           <label htmlFor="riversStrength" className="block mb-1">Rivers Influence: {riversStrength}</label>
           <input
